@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 __author__ = "Jake Miller (@LaconicWolf)"
-__date__ = "20181109"
-__version__ = "0.01"
+__date__ = "20191010"
+__version__ = "0.02"
 __description__ = """A multi-processed, multi-threaded scanner to discover web directories on multiple URLs."""
 
 import sys
@@ -11,6 +11,7 @@ if not sys.version.startswith('3'):
     print('\n[-] This script will only work with Python3. Sorry!\n')
     exit()
 
+import csv
 import subprocess
 import os
 import argparse
@@ -312,10 +313,9 @@ def format_results(results):
     # Write the file
     filepath = dirname + os.sep + filename
     with lock:
-        with open(filepath, 'w') as outfile:
-            for item in results:
-                item = [str(i) for i in item]
-                outfile.write(','.join(item) + '\n')
+        with open(filepath, 'w', newline='') as outfile:
+            csvwriter = csv.writer(outfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+            csvwriter.writerows(results)
         outfile.close()
         print("\n[*] Results file written to {}.".format(filepath))
 
@@ -403,7 +403,7 @@ parser.add_argument("-v", "--verbose",
                     action="store_true")
 parser.add_argument("-pr", "--proxy", 
                     help="specify a proxy to use (-pr 127.0.0.1:8080)")
-parser.add_argument("-ch", "--custome-header",
+parser.add_argument("-ch", "--custom_header",
                     nargs="*",
                     help='specify a custom header and value,  delimited with ~~~. Example: -a "X-Custom-Header~~~Custom-Value"')
 parser.add_argument("-a", "--auth",
